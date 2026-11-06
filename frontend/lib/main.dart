@@ -5,7 +5,10 @@ import "package:flutter_web_plugins/url_strategy.dart";
 
 void main() {
   usePathUrlStrategy();
-  runApp(ProviderScope(child: MainApp()));
+  runApp(ProviderScope(
+    retry: (_, _) => null,
+    child: MainApp(),
+  ));
 }
 
 class MainApp extends StatelessWidget {
