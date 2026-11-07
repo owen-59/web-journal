@@ -16,7 +16,6 @@ dependencies:
   riverpod_annotation: ^4.0.7
   dio: ^5.11.1
   intl: ^0.20.3
-  zard: ^1.4.0
   logger: ^2.8.0
   markdown_editor_live: ^0.6.0
 dev_dependencies:

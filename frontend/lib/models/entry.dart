@@ -1,6 +1,5 @@
 import "package:frontend/exceptions.dart";
 import "package:frontend/models/location.dart";
-import "package:zard/zard.dart";
 
 class Entry {
   final String body;
@@ -43,31 +42,6 @@ class Entry {
     };
   }
 }
-
-final locationSchema = z.map({
-  "coordinates": z.list(z.num()).min(2).max(2),
-  "address": z.string().optional(),
-  "placeName": z.string().optional(),
-});
-
-final entrySchema = z.map({
-  "body": z.string(),
-  "datetime": z.date(),
-  "tags": z.list(z.string()),
-  "images": z.list(z.string()),
-  "location": locationSchema,
-});
-
-final entryType = z.inferType<Entry>(
-  fromMap: (m) => Entry(
-    body: m["body"],
-    datetime: m["datetime"],
-    tags: m["tags"],
-    images: m["images"],
-    location: m["location"],
-  ),
-  mapSchema: entrySchema,
-);
 
 Entry parseEntryObject(dynamic obj) {
   if (obj is! Map) throw ResponseNotMapException(obj);
