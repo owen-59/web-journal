@@ -20,5 +20,6 @@ class ResponseValueInvalidException<T> extends ResponseParsingException {
   const ResponseValueInvalidException(this.obj);
 
   @override
-  String toString() => "ResponseValueInvalidException: $obj was not $T";
+  String toString() =>
+      "ResponseValueInvalidException: $obj was not $T, was ${obj.runtimeType}";
 }

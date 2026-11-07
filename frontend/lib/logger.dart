@@ -11,4 +11,3 @@ final Logger logger = Logger(
     noBoxingByDefault: true,
   ),
 );
-

@@ -1,19 +1,6 @@
-import "dart:ffi";
-
 import "package:frontend/exceptions.dart";
+import "package:frontend/models/location.dart";
 import "package:zard/zard.dart";
-
-class Location {
-  final (num, num) coordinates;
-  final String? address;
-  final String? placeName;
-
-  const Location({
-    required this.coordinates, 
-    required this.address, 
-    required this.placeName
-  });
-}
 
 class Entry {
   final String body;
@@ -29,6 +16,32 @@ class Entry {
     required this.images,
     required this.location,
   });
+
+  Entry copyWith({
+    String? body,
+    DateTime? datetime,
+    List<String>? tags,
+    List<String>? images,
+    Location? location,
+  }) {
+    return Entry(
+      body: body ?? this.body,
+      datetime: datetime ?? this.datetime,
+      tags: tags ?? this.tags,
+      images: images ?? this.images,
+      location: location ?? this.location,
+    );
+  }
+
+  Map<String, dynamic> encode() {
+    return {
+      "body": body,
+      "datetime": datetime.toString(),
+      "tags": tags,
+      "images": tags,
+      "location": location?.encode(),
+    };
+  }
 }
 
 final locationSchema = z.map({
@@ -58,15 +71,12 @@ final entryType = z.inferType<Entry>(
 
 Entry parseEntryObject(dynamic obj) {
   if (obj is! Map) throw ResponseNotMapException(obj);
-  final body = obj["body"] ;
-  final datetime = obj["datetime"];
-  final tags = obj["tags"];
-  final images = obj["images"];
-  final location = obj["location"];
+  final body = obj["body"];
+  final datetime = DateTime.parse(obj["datetime"]);
+  final tags = List<String>.from(obj["tags"]);
+  final images = List<String>.from(obj["images"]);
+  var location = obj["location"];
   if (body is! String) throw ResponseValueInvalidException<String>(body);
-  if (datetime is! DateTime) throw ResponseValueInvalidException<DateTime>(datetime);
-  if (tags is! List<String>) throw ResponseValueInvalidException<List<String>>(tags);
-  if (images is! String) throw ResponseValueInvalidException<List<String>>(images);
   if (location is! Map && location != null) {
     throw ResponseValueInvalidException<Map>(location);
   }
@@ -77,29 +87,37 @@ Entry parseEntryObject(dynamic obj) {
   bool hasLocation = false;
 
   if (location is Map) {
-    coordinates = location["coordinates"];
+    coordinates = List<num>.from(location["coordinates"]);
     address = location["address"];
     placeName = location["placeName"];
 
-    if (coordinates is! List<num>) throw ResponseValueInvalidException<List<num>>(coordinates);
-    if (address is! String && address != null) throw ResponseValueInvalidException<String>(address);
-    if (placeName is! String && placeName != null) throw ResponseValueInvalidException<String>(placeName);
+    if (coordinates is! List<num>) {
+      throw ResponseValueInvalidException<List<num>>(coordinates);
+    }
+    if (address is! String && address != null) {
+      throw ResponseValueInvalidException<String>(address);
+    }
+    if (placeName is! String && placeName != null) {
+      throw ResponseValueInvalidException<String>(placeName);
+    }
+    if (coordinates.length != 2) throw Error();
+    coordinates = (coordinates[0], coordinates[1]);
     hasLocation = true;
   }
 
-  final location = hasLocation : Location(
-    coordinates: ,
-    address: address,
+  location = hasLocation
+      ? Location(
+          coordinates: coordinates,
+          address: address,
+          placeName: placeName,
+        )
+      : null;
+
+  return Entry(
+    body: body,
+    datetime: datetime,
+    images: images,
+    tags: tags,
+    location: location,
   );
-
-
-  return entryType.parse(obj);
-  // final entry = entrySchema.parse(obj);
-  // return Entry(
-  //   body: entry["body"],
-  //   datetime: entry["datetime"],
-  //   tags: entry["tags"],
-  //   images: entry["images"],
-  //   location: entry["location"],
-  // );
 }
