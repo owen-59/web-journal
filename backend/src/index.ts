@@ -22,7 +22,7 @@ app.get(
     documentation: {
       info: {
         title: "web-journal backend",
-        version: "1.0.0",
+        version: "0.2.0",
       },
       servers: [{ url: "http://localhost:3000" }],
     },
