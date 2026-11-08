@@ -25,7 +25,6 @@ RUN groupadd -g 1000 appgroup && \
 
 WORKDIR /app
 COPY --chown=appuser:appgroup ./frontend/lib ./lib
-COPY --chown=appuser:appgroup ./frontend/public ./public
 COPY --chown=appuser:appgroup ./frontend/web ./web
 COPY --chown=appuser:appgroup ./frontend/pubspec* .
 
