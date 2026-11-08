@@ -49,7 +49,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  build-and-push-backend-image:
+  build-and-push-frontend-image:
     runs-on: ubuntu-latest
 
     permissions:
