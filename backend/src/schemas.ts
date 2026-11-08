@@ -11,7 +11,7 @@ export const EntrySchema = v.object({
   datetime: v.union([v.date(), v.pipe(v.string(), v.toDate())]),
   tags: v.array(v.string()),
   images: v.array(v.string()),
-  location: v.optional(Location),
+  location: v.nullish(Location),
 });
 
 export type Entry = v.InferOutput<typeof EntrySchema>;

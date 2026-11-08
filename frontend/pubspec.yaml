@@ -18,6 +18,9 @@ dependencies:
   intl: ^0.20.3
   logger: ^2.8.0
   markdown_editor_live: ^0.6.0
+  measured: ^1.0.1
+  flutter_web_scroll: ^1.0.1
+  collection: ^1.19.1
 dev_dependencies:
   flutter_lints: ^6.0.0
   auto_route_generator: ^10.6.0

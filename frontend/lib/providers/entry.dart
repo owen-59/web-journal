@@ -52,6 +52,8 @@ class EntryNotifier extends _$EntryNotifier {
         location: location,
       );
 
+      state = AsyncData(newEntry);
+
       await dio.put(
         DateFormat("'/api/entry/'y/MM/dd/HH/mm").format(dt),
         data: newEntry.encode(),

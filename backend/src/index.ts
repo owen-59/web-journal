@@ -3,14 +3,18 @@ import { Hono } from "hono";
 import { openAPIRouteHandler } from "hono-openapi";
 import { logger } from "hono/logger";
 import entryRouter from "./routers/entry.js";
+import entryListRouter from "./routers/entry_list.js";
 import { cors } from "hono/cors";
 
 const app = new Hono();
 
 app.use(logger());
-app.use("/api/*", cors({
-  origin: "http://localhost:8080"
-}));
+app.use(
+  "/api/*",
+  cors({
+    origin: "http://localhost:8080",
+  }),
+);
 
 app.get(
   "/openapi",
@@ -26,6 +30,7 @@ app.get(
 );
 
 app.route("/api/entry", entryRouter);
+app.route("/api/entry-list", entryListRouter);
 
 serve(
   {
