@@ -3,7 +3,9 @@ import "package:auto_route/auto_route.dart";
 import "package:flutter/rendering.dart";
 import "package:flutter_web_scroll/flutter_web_scroll.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:frontend/logger.dart";
 import "package:frontend/providers/entry_list.dart";
+import "package:frontend/router.gr.dart";
 import "package:frontend/widgets/measure/entry_card.dart";
 import "package:frontend/widgets/measure/entry_separator_with_text.dart";
 import "package:frontend/widgets/measure/entry_separator_without_text.dart";
@@ -28,10 +30,21 @@ class _HomePageState extends ConsumerState<HomePage> {
     final entries = ref.watch(entryListProvider);
     return Scaffold(
       appBar: AppBar(title: Text("Journal")),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final dt = await ref.read(entryListProvider.notifier).newEntry();
+          if (context.mounted) {
+            context.router.push(EntryRoute(id: dt.toString()));
+          } else {
+            logger.w("Created a new entry, but context unmounted.");
+          }
+        },
+        child: Icon(Icons.create),
+      ),
       body: Stack(
         children: [
           switch (entries) {
-            AsyncData(value: final entries) => SmoothScrollWeb(
+            AsyncData(value: final e) => SmoothScrollWeb(
               controller: _scrollController,
               config: SmoothScrollConfig.native(
                 scrollSpeed: 1.0,
@@ -43,7 +56,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 scrollCacheExtent: ScrollCacheExtent.viewport(2),
                 slivers: [
                   SliverEntryList(
-                    entries: entries,
+                    entries: e,
                     entryCardTemplateHeight: _entryCardTemplateHeight,
                     entrySeparatorWithTextHeight: _entrySeparatorWithTextHeight,
                     entrySeparatorWithoutTextHeight:
