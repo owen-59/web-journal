@@ -20,4 +20,24 @@ class EntryList extends _$EntryList {
         .sorted((a, b) => -a.compareTo(b));
     return dts;
   }
+
+  Future<void> addEntry(DateTime dt) async {
+    state = await AsyncValue.guard(() async {
+      final current = state.requireValue;
+      final index = lowerBound(current, dt, compare: (a, b) => -a.compareTo(b));
+      current.insert(index, dt);
+      return current;
+    });
+  }
+
+  Future<DateTime> newEntry() async {
+    final dio = ref.watch(dioProvider);
+    final res = await dio.post("/api/entry/new");
+    final data = res.data;
+    if (data is! String) throw ResponseValueInvalidException<String>(data);
+    final dt = DateTime.tryParse(data);
+    if (dt is! DateTime) throw ResponseValueInvalidException<DateTime>(dt);
+    await addEntry(dt.toLocal());
+    return dt.toLocal();
+  }
 }

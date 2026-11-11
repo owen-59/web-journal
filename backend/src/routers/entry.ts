@@ -2,10 +2,12 @@ import { Hono } from "hono";
 import { describeRoute, resolver, validator } from "hono-openapi";
 import { EntryQuery, EntrySchema } from "../schemas.js";
 import {
+  getNewEntryDt,
   PutEntryResponse,
   readEntry,
   writeEntry,
 } from "../repository/entry.js";
+import * as v from "valibot";
 
 type Env = {
   Variables: {
@@ -88,6 +90,25 @@ app.put(
       null,
       putEntryResponseCode == PutEntryResponse.Created ? 201 : 204,
     );
+  },
+);
+
+app.post(
+  "/new",
+  describeRoute({
+    description: "Create a new entry.",
+    responses: {
+      201: {
+        description: "Created the entry.",
+        content: {
+          "application/json": { schema: resolver(v.date()) },
+        },
+      },
+    },
+  }),
+  async (c) => {
+    const dt = await getNewEntryDt();
+    return c.json(dt, 201);
   },
 );
 

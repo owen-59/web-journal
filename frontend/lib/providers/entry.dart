@@ -12,18 +12,14 @@ part "entry.g.dart";
 class EntryNotifier extends _$EntryNotifier {
   @override
   Future<Entry> build(DateTime dt) async {
-    logger.i("Making request.");
     final dio = ref.read(dioProvider);
-    final res = await dio.get(
-      DateFormat("'/api/entry/'y/MM/dd/HH/mm").format(dt),
-    );
+    final path = DateFormat("'/api/entry/'y/MM/dd/HH/mm").format(dt);
+    logger.i("Requesting $path for $dt");
+    final res = await dio.get(path);
     final data = res.data;
     if (data is! Map) {
       throw ResponseNotMapException(data);
     }
-    logger.i("data.tags: ${data["tags"].runtimeType}: ${data["tags"]}");
-    logger.i("data.images: ${data["images"].runtimeType}: ${data["images"]}");
-    logger.i("data: $data");
     try {
       final entry = parseEntryObject(data);
       return entry;
@@ -58,7 +54,6 @@ class EntryNotifier extends _$EntryNotifier {
         DateFormat("'/api/entry/'y/MM/dd/HH/mm").format(dt),
         data: newEntry.encode(),
       );
-      logger.d("Wrote entry at $dt");
     } else {
       throw UnimplementedError();
     }

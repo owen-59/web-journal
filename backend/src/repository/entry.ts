@@ -5,6 +5,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import * as v from "valibot";
 import { stringify } from "yaml";
+import { addDt, entryDatetimes, updateCache } from "./cache.js";
+import { write } from "node:fs";
 
 const FrontMatterSchema = v.object({
   tags: v.nullish(v.array(v.string()), []),
@@ -83,5 +85,23 @@ export async function writeEntry(entry: Entry): Promise<PutEntryResponse> {
   }
   await fs.mkdir(path.dirname(entryPath), { recursive: true });
   await fs.writeFile(entryPath, content, "utf8");
+
+  updateCache();
+
   return fileExists ? PutEntryResponse.Updated : PutEntryResponse.Created;
+}
+
+export async function getNewEntryDt(): Promise<Date> {
+  let dt = new Date(Date.now());
+
+  dt.setSeconds(0);
+  dt.setMilliseconds(0);
+
+  while (entryDatetimes.some((d) => d.getTime() == dt.getTime())) {
+    dt.setMinutes(dt.getMinutes() + 1);
+  }
+
+  let emptyEntry: Entry = { body: "", datetime: dt, tags: [], images: [] };
+  await writeEntry(emptyEntry);
+  return dt;
 }
